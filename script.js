@@ -3,8 +3,6 @@ const ctx = canvas.getContext("2d");
 const scoreEl = document.getElementById("score");
 const bestEl = document.getElementById("best");
 const stateEl = document.getElementById("state");
-
-// Elementos de Overlay / UI
 const overlay = document.getElementById("overlay");
 const overlayTitle = document.getElementById("overlayTitle");
 const overlaySubtitle = document.getElementById("overlaySubtitle");
@@ -27,12 +25,10 @@ let dir = { x: 1, y: 0 };
 let nextDir = { x: 1, y: 0 };
 let food = { x: 10, y: 10 };
 
-// Fruta Especial Dourada
-let specialFood = null; // { x, y, spawnTime, duration: 6000 }
-const SPECIAL_FOOD_DURATION = 7000; // 7 segundos de duração
-let nextSpecialFoodTimer = 10000; // Tempo em ms para tentar spawnar a próxima
+let specialFood = null;
+const SPECIAL_FOOD_DURATION = 7000;
+let nextSpecialFoodTimer = 10000; 
 
-// Obstáculos
 let obstacles = [];
 
 let score = 0;
@@ -40,7 +36,6 @@ let acc = 0;
 let last = 0;
 let pendingHighScore = false;
 
-// Gerenciamento de Highscores no localStorage
 function getHighScores() {
     return JSON.parse(localStorage.getItem("wyrm-scores") || "[]");
 }
@@ -49,7 +44,7 @@ function saveHighScore(initials, pts) {
     const scores = getHighScores();
     scores.push({ initials: initials.toUpperCase(), score: pts });
     scores.sort((a, b) => b.score - a.score);
-    const topScores = scores.slice(0, 5); // Mantém os 5 melhores
+    const topScores = scores.slice(0, 5); 
     localStorage.setItem("wyrm-scores", JSON.stringify(topScores));
 }
 
@@ -74,7 +69,6 @@ function renderLeaderboard() {
     });
 }
 
-// Inicialização das estrelas ao redor
 function createStars() {
     const container = document.getElementById("starsContainer");
     container.innerHTML = "";
@@ -92,16 +86,11 @@ function createStars() {
     }
 }
 
-// Gerar Obstáculos em locais estratégicos no mapa
 function createObstacles() {
     obstacles = [
-        // Bloco superior esquerdo
         { x: 5, y: 5 }, { x: 6, y: 5 }, { x: 5, y: 6 },
-        // Bloco inferior direito
         { x: 14, y: 14 }, { x: 15, y: 14 }, { x: 15, y: 13 },
-        // Barreira central superior
         { x: 9, y: 4 }, { x: 10, y: 4 }, { x: 11, y: 4 },
-        // Barreira central inferior
         { x: 9, y: 16 }, { x: 10, y: 16 }, { x: 11, y: 16 }
     ];
 }
@@ -127,10 +116,9 @@ function reset() {
     nextDir = { x: 1, y: 0 };
     score = 0;
     scoreEl.textContent = score;
-
     createObstacles();
     specialFood = null;
-    nextSpecialFoodTimer = 8000 + Math.random() * 5000; // Primeiros 8-13s
+    nextSpecialFoodTimer = 8000 + Math.random() * 5000;
     
     spawnFood();
     state = STATES.READY;
@@ -169,7 +157,7 @@ function spawnSpecialFood(now) {
 }
 
 function setDirection(x, y) {
-    if (dir.x + x === 0 && dir.y + y === 0) return; // Impede 180°
+    if (dir.x + x === 0 && dir.y + y === 0) return;
     nextDir = { x, y };
 }
 
@@ -224,17 +212,15 @@ function tick() {
 
     snake.unshift(head);
 
-    // Comer fruta normal
     if (head.x === food.x && head.y === food.y) {
         score += 10;
         scoreEl.textContent = score;
         spawnFood();
     } 
-    // Comer fruta especial dourada
     else if (specialFood && head.x === specialFood.x && head.y === specialFood.y) {
-        score += 30; // Mais pontos!
+        score += 30; 
         scoreEl.textContent = score;
-        specialFood = null; // Some ao ser comida
+        specialFood = null;
     } 
     else {
         snake.pop();
@@ -302,7 +288,6 @@ actionBtn.addEventListener("click", () => {
     }
 });
 
-// Desenho dos elementos
 function drawFood() {
     ctx.fillStyle = "#f87171";
     ctx.shadowColor = "#ef4444";
@@ -321,19 +306,14 @@ function drawFood() {
 
 function drawSpecialFood(now) {
     if (!specialFood) return;
-
     const elapsed = now - specialFood.spawnTime;
     const remaining = specialFood.duration - elapsed;
-
     if (remaining <= 0) {
-        specialFood = null; // Expirou
+        specialFood = null;
         return;
     }
-
     const centerX = specialFood.x * CELL + CELL / 2;
     const centerY = specialFood.y * CELL + CELL / 2;
-
-    // Desenha Fruta Dourada Reluzente
     ctx.fillStyle = "#facc15";
     ctx.shadowColor = "#eab308";
     ctx.shadowBlur = 15;
@@ -341,8 +321,6 @@ function drawSpecialFood(now) {
     ctx.arc(centerX, centerY, CELL / 2 - 2, 0, Math.PI * 2);
     ctx.fill();
     ctx.shadowBlur = 0;
-
-    // Desenha anel do timer expirando ao redor da fruta
     const progress = remaining / specialFood.duration;
     ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 2;
@@ -362,11 +340,9 @@ function drawObstacles() {
         ctx.fillStyle = "#4c1d95";
         ctx.strokeStyle = "#a855f7";
         ctx.lineWidth = 1.5;
-
         const x = o.x * CELL + 1;
         const y = o.y * CELL + 1;
         const w = CELL - 2;
-
         ctx.beginPath();
         ctx.roundRect(x, y, w, w, 4);
         ctx.fill();
@@ -376,38 +352,34 @@ function drawObstacles() {
 
 function drawSnake() {
     snake.forEach((s, i) => {
-        // Calculation de degradê roxo (#8b5cf6) -> azul (#3b82f6)
         const factor = i / Math.max(snake.length - 1, 1);
         const r = Math.round(139 + (59 - 139) * factor);
         const g = Math.round(92 + (130 - 92) * factor);
         const b = Math.round(246 + (246 - 246) * factor);
-
         ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
         ctx.beginPath();
         ctx.roundRect(s.x * CELL + 1, s.y * CELL + 1, CELL - 2, CELL - 2, 6);
         ctx.fill();
-
-        // Desenhar olhos na cabeça
+        
         if (i === 0) {
             ctx.fillStyle = "#000000";
             const eyeRadius = 2.5;
             let eye1 = { x: 0, y: 0 };
             let eye2 = { x: 0, y: 0 };
 
-            if (dir.x === 1) { // Direita
+            if (dir.x === 1) { 
                 eye1 = { x: s.x * CELL + CELL - 6, y: s.y * CELL + 6 };
                 eye2 = { x: s.x * CELL + CELL - 6, y: s.y * CELL + CELL - 6 };
-            } else if (dir.x === -1) { // Esquerda
+            } else if (dir.x === -1) { 
                 eye1 = { x: s.x * CELL + 6, y: s.y * CELL + 6 };
                 eye2 = { x: s.x * CELL + 6, y: s.y * CELL + CELL - 6 };
-            } else if (dir.y === -1) { // Cima
+            } else if (dir.y === -1) { 
                 eye1 = { x: s.x * CELL + 6, y: s.y * CELL + 6 };
                 eye2 = { x: s.x * CELL + CELL - 6, y: s.y * CELL + 6 };
-            } else { // Baixo
+            } else { 
                 eye1 = { x: s.x * CELL + 6, y: s.y * CELL + CELL - 6 };
                 eye2 = { x: s.x * CELL + CELL - 6, y: s.y * CELL + CELL - 6 };
             }
-
             ctx.beginPath();
             ctx.arc(eye1.x, eye1.y, eyeRadius, 0, Math.PI * 2);
             ctx.arc(eye2.x, eye2.y, eyeRadius, 0, Math.PI * 2);
@@ -417,11 +389,11 @@ function drawSnake() {
 }
 
 function draw(now) {
-    // Limpar Canvas
+    
     ctx.fillStyle = "#070a12";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Grid discreto
+    
     ctx.strokeStyle = "rgba(255, 255, 255, 0.02)";
     for (let x = 0; x < canvas.width; x += CELL) {
         ctx.beginPath();
@@ -453,11 +425,10 @@ function loop(ts) {
             acc -= TICK_MS;
         }
 
-        // Lógica de spawn da fruta especial
         nextSpecialFoodTimer -= dt;
         if (nextSpecialFoodTimer <= 0 && !specialFood) {
             spawnSpecialFood(ts);
-            // Define o próximo tempo de spawn (entre 12s e 20s)
+            
             nextSpecialFoodTimer = 12000 + Math.random() * 8000;
         }
     }
@@ -466,7 +437,6 @@ function loop(ts) {
     requestAnimationFrame(loop);
 }
 
-// Inicialização
 createStars();
 updateBestDisplay();
 reset();
