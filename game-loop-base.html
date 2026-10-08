@@ -3,12 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game loop Template</title>
+    <title>Wyrm</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Template Gayme loop</h1>
-    <canvas id="game" width="480" height="300">
-<script src="script.js"></script>
+    <div class="stars-container" id="starsContainer"></div>
+
+    <main class="game-wrapper">
+        <h1 class="title">Wyrm Spiele</h1>
+        <p class="controls-hint">Controles: <span>W A S D</span> ou <span>Setas</span> | Pausa: <span>Espaço</span></p>
+
+        <div class="HUD">
+            <div class="hud-card">
+                <span class="hud-label">Pontos</span>
+                <strong id="score" class="hud-value">0</strong>
+            </div>
+            <div class="hud-card">
+                <span class="hud-label">Recorde</span>
+                <strong id="best" class="hud-value">0</strong>
+            </div>
+            <div class="hud-card">
+                <span class="hud-label">Estado</span>
+                <strong id="state" class="hud-value">Pronto</strong>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="game" width="500" height="500"></canvas>
+            
+            <div id="overlay" class="overlay">
+                <div id="overlayContent" class="overlay-content">
+                    <h2 id="overlayTitle">Wyrm</h2>
+                    <p id="overlaySubtitle">Pronto para começar?</p>
+                    
+                    <div id="highScoreInputContainer" class="hs-input-container hidden">
+                        <p class="hs-congrats">🎉 Novo Recorde! 🎉</p>
+                        <label for="initialsInput">Digite suas iniciais (3 letras):</label>
+                        <input type="text" id="initialsInput" maxlength="3" placeholder="WYR" autocomplete="off">
+                    </div>
+
+                    <div id="leaderboard" class="leaderboard hidden">
+                        <h3>Top Recordes</h3>
+                        <ol id="leaderboardList"></ol>
+                    </div>
+
+                    <button id="actionBtn" class="btn-glow">JOGAR</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
 </body>
 </html>
